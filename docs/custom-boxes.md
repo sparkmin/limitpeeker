@@ -66,8 +66,9 @@ A free style is handled like a slide.
 
 ## The file
 
-Each box is saved as one JSON file in `%LOCALAPPDATA%\LimitPeeker\boxes`. You may change the files yourself; the change
-shows the next time the popup opens. A file with a mistake is left out, and the log says why. The format is:
+Each box is saved as one JSON file in `%LOCALAPPDATA%\LimitPeeker\boxes`; `Open folder` under `Box files` on the settings
+window's `Custom boxes` page opens it. You may change the files yourself; the change shows the next time the popup opens.
+A file with a mistake is left out, and the log says why. The format is:
 
 ```json
 {

@@ -45,7 +45,7 @@ resets, and this PC's load, and lets you change a box in place.
 
 1. Download the zip from the [Releases page on GitHub](../../releases/latest) and drag the `LimitPeeker` folder inside it to a
    place you will keep, such as `C:\Tools`. Keep the files together: `limitpeeker_xaml.dll` must stay next to
-   `limitpeeker.exe`.
+   `limitpeeker.exe`. Later, `Install folder` on the settings window's `General` page shows where it is and opens it.
 2. Install the .NET Desktop Runtime 10 (x64), from
    [dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/download/dotnet/10.0) or with:
 
@@ -80,8 +80,9 @@ More in [Boxes, the popup and the settings window](docs/boxes-and-popup.md) and 
 ## Logos
 
 The services' logos are their companies' trademarks, so they are not included: as downloaded, each service shows as a
-dot in its color. To see the logos, as in the pictures here, put your own `.svg` or `.png` files in the `icons` folder;
-`Open icons folder` on the settings window's `Boxes` page opens it, and `icons\README.txt` says how.
+dot in its color. To see the logos, as in the pictures here, put your own `.svg` or `.png` files named `gpt`, `claude`,
+`gemini` and `grok` in `%LOCALAPPDATA%\LimitPeeker\icons`; `Open icons folder` on the settings window's `Boxes` page
+opens it ([more](docs/boxes-and-popup.md#boxes)).
 
 | As downloaded | With your own logos in `icons` |
 | --- | --- |
@@ -109,11 +110,11 @@ dot in its color. To see the logos, as in the pictures here, put your own `.svg`
 
 ## Uninstall
 
-Run `uninstall.exe` in LimitPeeker's folder **before deleting the folder** (it runs `limitpeeker.exe --remove`). It asks
-first, closes LimitPeeker and removes what it left on this PC: the start with Windows, its data in
-`%LOCALAPPDATA%\LimitPeeker`, and the entries it may have added to Claude Code's `.claude.json`. Then delete the folder;
-if Explorer still holds the DLL, restart Windows Explorer in Task Manager or sign out first.
-[Details](docs/uninstall.md).
+Run `uninstall.exe` in LimitPeeker's folder **before deleting the folder** (it runs `limitpeeker.exe --remove`;
+`Open folder` on the settings window's `General` page opens the folder). It asks first, closes LimitPeeker and removes
+what it left on this PC: the start with Windows, its data in `%LOCALAPPDATA%\LimitPeeker`, and the entries it may have
+added to Claude Code's `.claude.json`. Then delete the folder; if Explorer still holds the DLL, restart Windows Explorer
+in Task Manager or sign out first. [Details](docs/uninstall.md).
 
 ## Updates
 
@@ -122,8 +123,9 @@ and if there is a newer one, says so with a button that opens the releases page.
 you. To hear of new releases, you can also watch this repository on GitHub (Watch > Custom > Releases).
 
 To update, close LimitPeeker, open the new zip, drag its `LimitPeeker` folder to the same place as before and choose to
-replace the files, then start it again. The logos you put in `icons` stay. Explorer keeps `limitpeeker_xaml.dll` until it
-restarts, so if that file is in use, restart Windows Explorer in Task Manager first.
+replace the files, then start it again. The settings, custom boxes and logos stay, as they are kept in
+`%LOCALAPPDATA%\LimitPeeker`. Explorer keeps `limitpeeker_xaml.dll` until it restarts, so if that file is in use,
+restart Windows Explorer in Task Manager first.
 
 ## Known limits
 

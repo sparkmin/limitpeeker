@@ -23,9 +23,10 @@ the taskbar do not move.
   with `!!` before the number, whichever way the values show. PC's meters turn red at 90% used. The popup's summary
   shows the same colors. They can be turned off on the settings window's `Boxes` page.
 - **Icons:** the logos are their companies' trademarks, so they are not distributed with LimitPeeker. Put an `.svg` or
-  `.png` named after the service (`gpt`, `claude`, `gemini`, `grok`) in the `icons/` folder next to the EXE;
-  `Open icons folder` on the settings window's `Boxes` page opens it, and `icons/README.txt` there says the same. A
-  one-color icon is painted in the service's color; without a file, a dot in the service's color is drawn. `PC` is a
+  `.png` named after the service (`gpt`, `claude`, `gemini`, `grok`) in `%LOCALAPPDATA%\LimitPeeker\icons`, beside the
+  settings, so updating LimitPeeker or moving its folder keeps them; `Open icons folder` on the settings window's
+  `Boxes` page opens it. Logos left in an `icons` folder next to the EXE, where 0.1.0 read them, are moved there when
+  LimitPeeker starts. A one-color icon is painted in the service's color; without a file, a dot in the service's color is drawn. `PC` is a
   chip the program draws itself. A file put in, changed or taken away shows in the boxes within a second, and in the
   popup the next time it opens.
 
@@ -106,8 +107,9 @@ the first, `General`. It needs the .NET Desktop Runtime 10; without the runtime,
 its download page. Without `LimitPeeker.Settings.exe` next to the EXE, `Settings…` in the popup is greyed out.
 
 - `General`: the window's language, `Refresh now`, `Tool updates` (the tools'
-  [own update commands](services.md#updates-of-the-tools), off at first), [start with Windows](startup.md), how to
-  uninstall, the version and `Check for updates`.
+  [own update commands](services.md#updates-of-the-tools), off at first), [start with Windows](startup.md),
+  `Install folder` (where LimitPeeker's folder is, and `Open folder`), how to uninstall, the version and
+  `Check for updates`.
 - `Boxes`: the box tabs and the chosen box's name, place and order, look, background, color and opacity (`Default` puts
   both back) and services. Add and remove boxes
   with `Add box` and `Remove`, and rename them under `Name`. Services on in the box are cards with their limits and order
@@ -115,7 +117,8 @@ its download page. Without `LimitPeeker.Settings.exe` next to the EXE, `Settings
   beside the note opens the editor. `Open icons folder`, under `Service logos`, opens the icons folder. Under
   `All boxes` at the bottom are
   `Show values as` and the switches for the warning colors and for dragging.
-- `Custom boxes`: `Open editor` opens the box editor.
+- `Custom boxes`: `Open editor` opens the box editor, and `Open folder` under `Box files` opens the folder of the boxes'
+  files.
 - `Popup`: the services the popup's summary shows.
 - `Notifications`: which [notifications](#notifications) are sent, the share that is almost used up, and a test.
 

@@ -529,9 +529,32 @@ mod tests {
         assert_eq!(page.matches(r#"Click="EditorClicked""#).count(), 2);
         assert!(page.contains(r#"Click="IconsClicked""#));
         assert!(window.contains("EditorLinkButton.Visibility = custom ?"));
-        assert!(window.contains(r#"Path.Combine(AppContext.BaseDirectory, "icons")"#));
+        // The icons folder by the controller's rule, beside the settings.
+        assert!(window.contains("var folder = IconsFolder;"));
+        assert!(window.contains(r#"Path.Combine(local, "LimitPeeker", "icons")"#));
+        assert!(
+            include_str!("icons.rs")
+                .contains(r#"crate::settings::data_dir().map(|dir| dir.join("icons"))"#)
+        );
         assert_eq!(editor.matches("StartUnchosen();").count(), 2);
         assert!(!editor.contains("Choose([0], 0)"));
+        // The General page shows LimitPeeker's folder, the window's own, and
+        // opens it.
+        assert!(page.contains(r#"Click="FolderClicked""#));
+        assert!(window.contains("Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory)"));
+        assert!(window.contains("FolderText.Text = Folder;"));
+        // The Custom boxes page shows the boxes' folder by the controller's
+        // own rule, and opens it.
+        assert!(page.contains(r#"Click="FilesClicked""#));
+        assert!(window.contains(r#"Environment.GetEnvironmentVariable("LOCALAPPDATA")"#));
+        assert!(window.contains(r#"Path.Combine(local, "LimitPeeker", "boxes")"#));
+        assert!(include_str!("settings.rs").contains(
+            r#"std::env::var_os("LOCALAPPDATA").map(|dir| PathBuf::from(dir).join("LimitPeeker"))"#
+        ));
+        assert!(
+            include_str!("windows_app/mod.rs")
+                .contains(r#"settings::data_dir().map(|dir| dir.join("boxes"))"#)
+        );
         for word in [
             "look",
             "looks",

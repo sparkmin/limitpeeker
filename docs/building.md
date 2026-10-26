@@ -28,7 +28,6 @@ script above.
   Runtime 10
 - `README.md`, `LICENSE`, `THIRD_PARTY_NOTICES.md`, `docs/*.md` and the README's pictures in `docs/images`; the README's
   link to the Releases page works only on GitHub
-- `icons/README.txt` — where to put the services' logos, which are not included
 
 Explorer holds the DLL, so a build with changes to the DLL's source (`native/`) is made after closing LimitPeeker and
 restarting Explorer. When the DLL's source has not changed, the script does not build the DLL again.
@@ -50,7 +49,7 @@ runs or publishes anything. A release needs the settings window, so build with t
 
 | Path | Contents |
 | --- | --- |
-| `src/`, `native/`, `settings/`, `assets/` | The controller and `uninstall.exe` (Rust), the DLL inside Explorer (C++), the settings window (WPF), the program icon and the note for `icons/` |
+| `src/`, `native/`, `settings/`, `assets/` | The controller and `uninstall.exe` (Rust), the DLL inside Explorer (C++), the settings window (WPF), the program icon |
 | `scripts/build.ps1` | Builds the product, into `target/dist` |
 | `scripts/package.ps1` | Packs `target/dist` into the release zip, into `target/package` |
 | `docs/` | The documentation the README points to |

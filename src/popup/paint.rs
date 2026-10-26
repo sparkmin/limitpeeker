@@ -837,7 +837,7 @@ impl Popup {
             .entry(id)
             .or_insert_with(|| {
                 let side = (16.0 * dpi as f32 / 96.0).round() as u32;
-                let dir = std::env::current_exe().ok()?.parent()?.join("icons");
+                let dir = icons::dir()?;
                 let (icon, _) = icons::load(&dir, id, side, legible(color, palette.background));
                 let properties = D2D1_BITMAP_PROPERTIES {
                     pixelFormat: D2D1_PIXEL_FORMAT {

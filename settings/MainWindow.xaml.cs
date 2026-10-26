@@ -123,6 +123,18 @@ public partial class MainWindow : Window
             // Kept, but not on the taskbar.
             new Option("hidden", Loc.Plain("boxes.place.hidden")),
         };
+        // Where LimitPeeker is.
+        FolderText.Text = Folder;
+        // Where the custom boxes' files are; without LOCALAPPDATA the
+        // controller has no such place either.
+        if (BoxesFolder is { } boxes)
+        {
+            FilesText.Text = boxes;
+        }
+        else
+        {
+            FilesCard.Visibility = Visibility.Collapsed;
+        }
         resting.Tick += (_, _) => ShowRefresh();
         // The opacity goes once the thumb is let go, not at every step of
         // the drag.
@@ -535,12 +547,21 @@ public partial class MainWindow : Window
     void EditorClicked(object sender, RoutedEventArgs e) => ShowEditor();
 
     /// <summary>
-    /// Opens the icons folder beside the programs in Explorer, made first when
-    /// it is not there; why not, under the card.
+    /// The services' logos' folder, by the controller's rule: LimitPeeker\icons
+    /// under LOCALAPPDATA, or beside the programs without it.
+    /// </summary>
+    static string IconsFolder =>
+        Environment.GetEnvironmentVariable("LOCALAPPDATA") is { Length: > 0 } local
+            ? Path.Combine(local, "LimitPeeker", "icons")
+            : Path.Combine(AppContext.BaseDirectory, "icons");
+
+    /// <summary>
+    /// Opens the icons folder in Explorer, made first when it is not there;
+    /// why not, under the card.
     /// </summary>
     void IconsClicked(object sender, RoutedEventArgs e)
     {
-        var folder = Path.Combine(AppContext.BaseDirectory, "icons");
+        var folder = IconsFolder;
         try
         {
             Directory.CreateDirectory(folder);
@@ -551,6 +572,58 @@ public partial class MainWindow : Window
         {
             LogosNote.Text = Loc.T("boxes.logos.failed", ("why", ex.Message));
             LogosNote.Visibility = Visibility.Visible;
+        }
+    }
+
+    /// <summary>
+    /// LimitPeeker's folder: this window's own, as the controller starts it
+    /// only from beside limitpeeker.exe.
+    /// </summary>
+    static string Folder => Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory);
+
+    /// <summary>
+    /// Opens LimitPeeker's folder in Explorer; why not, under the card.
+    /// </summary>
+    void FolderClicked(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(Folder) { UseShellExecute = true });
+            FolderNote.Visibility = Visibility.Collapsed;
+        }
+        catch (Win32Exception ex)
+        {
+            FolderNote.Text = Loc.T("general.folder.failed", ("why", ex.Message));
+            FolderNote.Visibility = Visibility.Visible;
+        }
+    }
+
+    /// <summary>
+    /// The custom boxes' folder, by the controller's rule: LimitPeeker\boxes
+    /// under LOCALAPPDATA, or none without it.
+    /// </summary>
+    static string? BoxesFolder =>
+        Environment.GetEnvironmentVariable("LOCALAPPDATA") is { Length: > 0 } local
+            ? Path.Combine(local, "LimitPeeker", "boxes")
+            : null;
+
+    /// <summary>
+    /// Opens the custom boxes' folder in Explorer, made first when it is not
+    /// there; why not, under the card.
+    /// </summary>
+    void FilesClicked(object sender, RoutedEventArgs e)
+    {
+        if (BoxesFolder is not { } folder) return;
+        try
+        {
+            Directory.CreateDirectory(folder);
+            Process.Start(new ProcessStartInfo(folder) { UseShellExecute = true });
+            FilesNote.Visibility = Visibility.Collapsed;
+        }
+        catch (Exception ex) when (ex is Win32Exception or IOException or UnauthorizedAccessException)
+        {
+            FilesNote.Text = Loc.T("custom.files.failed", ("why", ex.Message));
+            FilesNote.Visibility = Visibility.Visible;
         }
     }
 

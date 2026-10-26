@@ -31,7 +31,7 @@ pub fn run() {
     if !ask(&format!(
         "Remove what LimitPeeker keeps on this PC?\n\n\
          \u{2022} Its start at sign-in, if it is on\n\
-         \u{2022} Its folder in AppData, with the settings, custom boxes, and the own folders of the hidden Claude Code, Antigravity CLI and Grok CLI:\n    {shown_data}\n\
+         \u{2022} Its folder in AppData, with the settings, custom boxes, the services' logos, and the own folders of the hidden Claude Code, Antigravity CLI and Grok CLI:\n    {shown_data}\n\
          \u{2022} The hidden Claude Code's entries in Claude Code's file (.claude.json)\n\n\
          LimitPeeker is closed first if it is running. The folder with limitpeeker.exe is left for you to delete afterwards."
     )) {

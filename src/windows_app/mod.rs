@@ -255,6 +255,16 @@ pub fn run() -> windows::core::Result<()> {
         let boxes_dir = settings::data_dir().map(|dir| dir.join("boxes"));
         let (boxes, mut box_problems) = crate::boxes::load(boxes_dir.as_deref());
         choice.set_boxes(boxes);
+        // The logos 0.1.0 read beside the program go beside the settings,
+        // before anything draws them; what was done is noted once the log
+        // is open.
+        let old_icons = match (std::env::current_exe(), crate::icons::dir()) {
+            (Ok(exe), Some(new)) => exe
+                .parent()
+                .map(|dir| crate::icons::move_old(&dir.join("icons"), &new))
+                .unwrap_or_default(),
+            _ => Vec::new(),
+        };
         // The first box's place, from the command line before what the last
         // run saved, as --look does.
         if let Some(place) = args
@@ -279,6 +289,9 @@ pub fn run() -> windows::core::Result<()> {
         );
         for problem in &box_problems {
             controller.note(format!("box file left out: {problem}"));
+        }
+        for line in &old_icons {
+            controller.note(format!("old icons folder: {line}"));
         }
         ENDING.with(|ending| *ending.borrow_mut() = Some(controller.log_file()));
         // The job this run was started in: a packaged app's update ends it

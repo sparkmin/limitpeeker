@@ -208,10 +208,7 @@ impl Session {
     }
     /// Greets Codex, which then takes requests.
     fn initialize(&mut self) -> Result<(), String> {
-        self.request(
-            "initialize",
-            r#"{"clientInfo":{"name":"limitpeeker","title":"LimitPeeker","version":"0.1.0"}}"#,
-        )?;
+        self.request("initialize", &client_info())?;
         self.send(r#"{"method":"initialized"}"#)
     }
     /// Asks for the rate limits.
@@ -334,9 +331,30 @@ fn window_label(minutes: Option<f64>, index: usize) -> String {
     }
 }
 
+/// Who asks, as Codex's initialize takes it: this program, with the
+/// version in Cargo.toml.
+fn client_info() -> String {
+    format!(
+        r#"{{"clientInfo":{{"name":"limitpeeker","title":"LimitPeeker","version":"{}"}}}}"#,
+        env!("CARGO_PKG_VERSION")
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn codex_is_told_this_version() {
+        // Not a version written by hand, which stayed 0.1.0.
+        let info = json::parse(&client_info()).expect("JSON");
+        let client = info.get("clientInfo").expect("clientInfo");
+        assert_eq!(client.get("name").and_then(Json::text), Some("limitpeeker"));
+        assert_eq!(
+            client.get("version").and_then(Json::text),
+            Some(env!("CARGO_PKG_VERSION"))
+        );
+    }
 
     fn read_limits(text: &str) -> Result<Found, String> {
         limits(&json::parse(text).unwrap())

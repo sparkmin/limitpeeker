@@ -1,6 +1,6 @@
 [package]
 name = "limitpeeker"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Usage limits of AI coding subscriptions (Codex, Claude Code, Gemini, Grok) on the Windows 11 taskbar"
 license = "MIT"

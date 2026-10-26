@@ -18,7 +18,7 @@ if (-not $version) { throw 'The version was not found in Cargo.toml' }
 # documents and pictures are the ones in docs/ now, so one taken away is not
 # packed from an older build.
 $names = @('limitpeeker.exe', 'limitpeeker_xaml.dll', 'uninstall.exe', 'LimitPeeker.Settings.exe',
-    'README.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'icons/README.txt')
+    'README.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md')
 $names += Get-ChildItem -Path (Join-Path $repo 'docs') -Filter '*.md' | Sort-Object Name | ForEach-Object { "docs/$($_.Name)" }
 $names += Get-ChildItem -Path (Join-Path $repo 'docs/images') -Filter '*.png' | Sort-Object Name | ForEach-Object { "docs/images/$($_.Name)" }
 $missing = @($names | Where-Object { -not (Test-Path -LiteralPath (Join-Path $dist $_)) })

@@ -2,7 +2,7 @@
 //! and sent to the hook as pixels. Explorer never opens or parses an image
 //! file; a bad one can stop only this process.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::{Mutex, PoisonError};
 use windows::Win32::Foundation::GENERIC_READ;
 use windows::Win32::Graphics::Direct2D::Common::*;
@@ -79,6 +79,70 @@ pub fn stamp(dir: &Path, id: &str) -> u64 {
             .hash(&mut hasher);
     }
     hasher.finish()
+}
+
+/// The folder of the services' logos, beside the settings and the custom
+/// boxes, so a new or moved program folder keeps them.
+pub fn dir() -> Option<PathBuf> {
+    crate::settings::data_dir().map(|dir| dir.join("icons"))
+}
+
+/// Moves the logos a person put in `old`, the program's own icons folder
+/// that 0.1.0 read, into `new`, but not one `new` has already; then takes
+/// `old` away once only 0.1.0's note is left in it. Copied and then
+/// deleted, as the two may be on different drives. Says what it did, for
+/// the log.
+pub fn move_old(old: &Path, new: &Path) -> Vec<String> {
+    let Ok(entries) = std::fs::read_dir(old) else {
+        return Vec::new();
+    };
+    let mut said = Vec::new();
+    for path in entries.flatten().map(|entry| entry.path()) {
+        let logo = path
+            .extension()
+            .and_then(|extension| extension.to_str())
+            .is_some_and(|extension| {
+                extension.eq_ignore_ascii_case("svg") || extension.eq_ignore_ascii_case("png")
+            });
+        let Some(name) = path.file_name().filter(|_| logo && path.is_file()) else {
+            continue;
+        };
+        let to = new.join(name);
+        let name = name.to_string_lossy();
+        if to.exists() {
+            said.push(format!("{name} left there: the new folder has one"));
+            continue;
+        }
+        said.push(
+            match std::fs::create_dir_all(new).and_then(|()| std::fs::copy(&path, &to)) {
+                Err(error) => format!("{name} not copied: {error}"),
+                Ok(_) => match std::fs::remove_file(&path) {
+                    Ok(()) => format!("{name} moved to {}", new.display()),
+                    Err(error) => format!("{name} copied, but left there too: {error}"),
+                },
+            },
+        );
+    }
+    // 0.1.0's note says to put the logos there, so it goes, and the folder
+    // with it, but only when nothing else is left.
+    let left: Vec<PathBuf> = std::fs::read_dir(old)
+        .map(|entries| entries.flatten().map(|entry| entry.path()).collect())
+        .unwrap_or_default();
+    let note_only = left.iter().all(|path| {
+        path.file_name()
+            .is_some_and(|name| name.to_string_lossy().eq_ignore_ascii_case("README.txt"))
+    });
+    if note_only {
+        let gone = left
+            .iter()
+            .try_for_each(std::fs::remove_file)
+            .and_then(|()| std::fs::remove_dir(old));
+        said.push(match gone {
+            Ok(()) => "taken away".into(),
+            Err(error) => format!("kept: {error}"),
+        });
+    }
+    said
 }
 
 /// Runs `make`, which makes a Direct2D render target and so a Direct3D
@@ -490,5 +554,44 @@ mod tests {
         std::fs::remove_file(dir.join("claude.svg")).unwrap();
         assert_eq!(stamp(&dir, "claude"), none);
         std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn old_logos_move_beside_the_settings() {
+        // 0.1.0's icons folder beside the program: two logos and its note.
+        let root = std::env::temp_dir().join(format!("limitpeeker-move-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&root);
+        let old = root.join("program").join("icons");
+        let new = root.join("data").join("icons");
+        std::fs::create_dir_all(&old).unwrap();
+        for name in ["gpt.svg", "claude.png", "README.txt"] {
+            std::fs::write(old.join(name), name).unwrap();
+        }
+        let said = move_old(&old, &new);
+        let read = |path: PathBuf| std::fs::read_to_string(path).unwrap();
+        assert_eq!(read(new.join("gpt.svg")), "gpt.svg");
+        assert_eq!(read(new.join("claude.png")), "claude.png");
+        assert!(!new.join("README.txt").exists());
+        assert!(!old.exists(), "{said:?}");
+        // With the old folder gone, there is nothing to do.
+        assert!(move_old(&old, &new).is_empty());
+
+        // A logo the new folder has already stays on both sides, and so
+        // do the old folder and its note.
+        std::fs::create_dir_all(&old).unwrap();
+        std::fs::write(old.join("gpt.svg"), "older").unwrap();
+        std::fs::write(old.join("README.txt"), "note").unwrap();
+        move_old(&old, &new);
+        assert_eq!(read(new.join("gpt.svg")), "gpt.svg");
+        assert_eq!(read(old.join("gpt.svg")), "older");
+        assert!(old.join("README.txt").exists());
+
+        // Another file of the person's keeps the note and the folder too.
+        std::fs::remove_file(old.join("gpt.svg")).unwrap();
+        std::fs::write(old.join("mine.txt"), "mine").unwrap();
+        move_old(&old, &new);
+        assert!(old.join("README.txt").exists());
+        assert!(old.join("mine.txt").exists());
+        std::fs::remove_dir_all(&root).unwrap();
     }
 }

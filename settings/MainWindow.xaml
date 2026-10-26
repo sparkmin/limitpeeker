@@ -348,8 +348,29 @@
                                     <TextBlock Text="{l:T custom.editor.title}" />
                                     <TextBlock Text="{l:T custom.editor.caption}" Style="{StaticResource Caption}" />
                                 </StackPanel>
-                                <Button Grid.Column="1" VerticalAlignment="Center" Content="{l:T custom.editor.button}" Click="EditorClicked" />
+                                <Button Grid.Column="1" VerticalAlignment="Center" MinWidth="150"
+                                        Content="{l:T custom.editor.button}" Click="EditorClicked" />
                             </Grid>
+                        </Border>
+                        <!-- Where the custom boxes' files are, one press away.
+ -->
+                        <Border x:Name="FilesCard" Style="{StaticResource Card}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:T custom.files.title}" />
+                                        <TextBlock x:Name="FilesText" Style="{StaticResource Caption}" />
+                                        <TextBlock Text="{l:T custom.files.caption}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" VerticalAlignment="Center" MinWidth="150"
+                                            Content="{l:T custom.files.button}" Click="FilesClicked" />
+                                </Grid>
+                                <TextBlock x:Name="FilesNote" Style="{StaticResource Caption}" Margin="0,10,0,0" Visibility="Collapsed" />
+                            </StackPanel>
                         </Border>
                     </StackPanel>
 
@@ -509,6 +530,25 @@
                                 </Grid>
                                 <!-- Task Scheduler's sign-in tasks a person made, found, not made. -->
                                 <TextBlock x:Name="TaskNote" Style="{StaticResource Caption}" Margin="0,10,0,0" Visibility="Collapsed" />
+                            </StackPanel>
+                        </Border>
+                        <!-- Where LimitPeeker is, for updating and removing it, and
+                             a press to open it. -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:T general.folder.title}" />
+                                        <TextBlock x:Name="FolderText" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" VerticalAlignment="Center" MinWidth="150"
+                                            Content="{l:T general.folder.button}" Click="FolderClicked" />
+                                </Grid>
+                                <TextBlock x:Name="FolderNote" Style="{StaticResource Caption}" Margin="0,10,0,0" Visibility="Collapsed" />
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource Card}">

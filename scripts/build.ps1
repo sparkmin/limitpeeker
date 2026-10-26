@@ -126,16 +126,12 @@ if ((Get-Command dotnet -ErrorAction SilentlyContinue) -and ((& dotnet --list-sd
 }
 # The license goes with every copy, as MIT asks.
 Copy-Item -LiteralPath (Join-Path $repo 'README.md'),(Join-Path $repo 'LICENSE'),(Join-Path $repo 'THIRD_PARTY_NOTICES.md') -Destination $out
-# The documents the README links to, with the pictures the README shows, and
-# the note in icons/ on the logos, which are not included. Only that file is
-# copied there: the logos someone put in icons/ stay.
+# The documents the README links to, with the pictures the README shows. The
+# logos' folder is beside the settings, not here.
 $docs = Join-Path $out 'docs'
 $images = Join-Path $docs 'images'
 New-Item -ItemType Directory -Force -Path $images | Out-Null
 Remove-Item -Path (Join-Path $docs '*.md'),(Join-Path $images '*.png') -Force -ErrorAction SilentlyContinue
 Copy-Item -Path (Join-Path $repo 'docs/*.md') -Destination $docs
 Copy-Item -Path (Join-Path $repo 'docs/images/*.png') -Destination $images
-$icons = Join-Path $out 'icons'
-New-Item -ItemType Directory -Force -Path $icons | Out-Null
-Copy-Item -LiteralPath (Join-Path $repo 'assets/icons/README.txt') -Destination $icons
 Write-Output "Built only, NOT executed: $out"

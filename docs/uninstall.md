@@ -2,13 +2,14 @@
 
 **To remove LimitPeeker cleanly, run `uninstall.exe` in its folder before deleting the folder.** It does the same as
 `limitpeeker.exe --remove`, and needs `limitpeeker.exe` next to it; without it, it says so and removes nothing. Deleting
-only the folder leaves the things below on this PC.
+only the folder leaves the things below on this PC. To find the folder, press `Open folder` under `Install folder` on
+the settings window's `General` page.
 
 It shows what it will remove and asks first, then closes LimitPeeker if it is running and removes:
 
 - the Start with Windows entry (including the mark that Windows turned it off)
-- `%LOCALAPPDATA%\LimitPeeker`: the settings, the custom boxes, the home folders of the hidden Claude Code, Antigravity
-  CLI and Grok CLI, and the logs of what they handed over and of their updates
+- `%LOCALAPPDATA%\LimitPeeker`: the settings, the custom boxes, the services' logos, the home folders of the hidden
+  Claude Code, Antigravity CLI and Grok CLI, and the logs of what they handed over and of their updates
 - the trust entries for the hidden Claude Code's folder in Claude Code's `.claude.json` (in `%USERPROFILE%`, or in
   `CLAUDE_CONFIG_DIR` when that is set): the folder's path, written both ways. They are there only if Claude's fallback
   ran. Only those entries go, with what the hidden Claude Code wrote in them; the rest stays as it is.

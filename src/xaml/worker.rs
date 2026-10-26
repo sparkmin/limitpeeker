@@ -228,7 +228,7 @@ struct Worker {
     dll: String,
     /// The hook's own lines only with --diagnostics.
     hook_log: Log,
-    /// Icon files sit beside the hook's DLL.
+    /// The services' logos' folder.
     icon_dir: PathBuf,
     began: u64,
     channel: Option<Channel>,
@@ -265,7 +265,10 @@ impl Worker {
         } else {
             Arc::new(Mutex::new(None))
         };
-        let icon_dir = std::path::Path::new(&dll).with_file_name("icons");
+        // Beside the settings; without LOCALAPPDATA, where no settings are
+        // kept either, beside the DLL as before.
+        let icon_dir = crate::icons::dir()
+            .unwrap_or_else(|| std::path::Path::new(&dll).with_file_name("icons"));
         Self {
             presentation,
             shown_text,
