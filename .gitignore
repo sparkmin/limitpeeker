@@ -1,0 +1,20 @@
+# Build output, including the experiment's own target directory.
+target/
+
+# Repository-local Rust toolchain.
+/.tools/
+
+# Machine-local tool configuration and index state (absolute paths inside).
+/.arqiven/
+/.codex/
+/.mcp.json
+
+# Obsidian vault state of the notes opened here.
+/.obsidian/
+
+# The settings window's build output.
+/settings/bin/
+/settings/obj/
+
+# Python bytecode from the report scripts.
+__pycache__/

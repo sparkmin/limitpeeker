@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The settings window: .NET 10 WPF with the Fluent theme. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>LimitPeeker.Settings</AssemblyName>
+    <RootNamespace>LimitPeeker.Settings</RootNamespace>
+    <!-- The file's Details tab and Task Manager; the version and the copyright
+         come from the build script, out of Cargo.toml and LICENSE. -->
+    <Product>LimitPeeker</Product>
+    <AssemblyTitle>LimitPeeker settings</AssemblyTitle>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- ThemeMode, which turns the Fluent theme on, is marked experimental. -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+    <!-- The program icon, also the window's. -->
+    <ApplicationIcon>..\assets\limitpeeker.ico</ApplicationIcon>
+    <!-- One file beside the widget, which the .NET 10 Desktop Runtime runs;
+         the debug information inside it. -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="..\assets\limitpeeker.ico" Link="limitpeeker.ico" />
+  </ItemGroup>
+
+  <!-- The words of each language, inside the program, read by Loc. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Strings\*.json" LogicalName="LimitPeeker.Settings.Strings.%(Filename).json" />
+  </ItemGroup>
+
+</Project>

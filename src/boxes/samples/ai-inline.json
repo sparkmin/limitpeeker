@@ -1,0 +1,28 @@
+{
+  "name": "AI inline",
+  "mode": "free",
+  "width": 365,
+  "blocks": [
+    { "block": "icon", "service": "gpt", "x": 0, "y": 12 },
+    { "block": "text", "service": "gpt", "limit": 1, "show": "label", "size": 13, "weight": 400, "x": 22, "y": 2, "w": 15, "h": 16 },
+    { "block": "text", "service": "gpt", "limit": 1, "size": 13, "weight": 400, "align": "end", "x": 41, "y": 2, "w": 30, "h": 16 },
+    { "block": "bar", "service": "gpt", "limit": 1, "x": 79, "y": 8, "w": 32, "h": 4 },
+    { "block": "text", "service": "gpt", "limit": 2, "show": "label", "size": 13, "weight": 400, "x": 22, "y": 22, "w": 15, "h": 16 },
+    { "block": "text", "service": "gpt", "limit": 2, "size": 13, "weight": 400, "align": "end", "x": 41, "y": 22, "w": 30, "h": 16 },
+    { "block": "bar", "service": "gpt", "limit": 2, "x": 79, "y": 28, "w": 32, "h": 4 },
+    { "block": "icon", "service": "claude", "x": 127, "y": 12 },
+    { "block": "text", "service": "claude", "limit": 1, "show": "label", "size": 13, "weight": 400, "x": 149, "y": 2, "w": 15, "h": 16 },
+    { "block": "text", "service": "claude", "limit": 1, "size": 13, "weight": 400, "align": "end", "x": 168, "y": 2, "w": 30, "h": 16 },
+    { "block": "bar", "service": "claude", "limit": 1, "x": 206, "y": 8, "w": 32, "h": 4 },
+    { "block": "text", "service": "claude", "limit": 2, "show": "label", "size": 13, "weight": 400, "x": 149, "y": 22, "w": 15, "h": 16 },
+    { "block": "text", "service": "claude", "limit": 2, "size": 13, "weight": 400, "align": "end", "x": 168, "y": 22, "w": 30, "h": 16 },
+    { "block": "bar", "service": "claude", "limit": 2, "x": 206, "y": 28, "w": 32, "h": 4 },
+    { "block": "icon", "service": "gemini", "x": 254, "y": 12 },
+    { "block": "text", "service": "gemini", "limit": 1, "show": "label", "size": 13, "weight": 400, "x": 276, "y": 2, "w": 15, "h": 16 },
+    { "block": "text", "service": "gemini", "limit": 1, "size": 13, "weight": 400, "align": "end", "x": 295, "y": 2, "w": 30, "h": 16 },
+    { "block": "bar", "service": "gemini", "limit": 1, "x": 333, "y": 8, "w": 32, "h": 4 },
+    { "block": "text", "service": "gemini", "limit": 2, "show": "label", "size": 13, "weight": 400, "x": 276, "y": 22, "w": 15, "h": 16 },
+    { "block": "text", "service": "gemini", "limit": 2, "size": 13, "weight": 400, "align": "end", "x": 295, "y": 22, "w": 30, "h": 16 },
+    { "block": "bar", "service": "gemini", "limit": 2, "x": 333, "y": 28, "w": 32, "h": 4 }
+  ]
+}

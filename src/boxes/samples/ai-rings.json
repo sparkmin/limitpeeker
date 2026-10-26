@@ -1,0 +1,41 @@
+{
+  "name": "AI rings",
+  "mode": "columns",
+  "columns": [
+    [{ "block": "icon", "service": "gpt" }],
+    [{ "block": "rings", "service": "gpt", "limits": [1, 2], "thickness": 3 }],
+    [
+      { "block": "text", "service": "gpt", "limit": 1, "show": "label", "size": 11, "weight": 400 },
+      { "block": "text", "service": "gpt", "limit": 2, "show": "label", "size": 11, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "gpt", "limit": 1, "size": 11, "weight": 400, "align": "end" },
+      { "block": "text", "service": "gpt", "limit": 2, "size": 11, "weight": 400, "align": "end" }
+    ],
+    [{ "block": "space", "width": 14 }],
+    [{ "block": "icon", "service": "claude" }],
+    [{ "block": "rings", "service": "claude", "limits": [1, 2], "thickness": 3 }],
+    [
+      { "block": "text", "service": "claude", "limit": 1, "show": "label", "size": 11, "weight": 400 },
+      { "block": "text", "service": "claude", "limit": 2, "show": "label", "size": 11, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "claude", "limit": 1, "size": 11, "weight": 400, "align": "end" },
+      { "block": "text", "service": "claude", "limit": 2, "size": 11, "weight": 400, "align": "end" }
+    ],
+    [{ "block": "space", "width": 14 }],
+    [{ "block": "icon", "service": "gemini" }],
+    [{ "block": "rings", "service": "gemini", "limits": [1, 2], "thickness": 3 }],
+    [
+      { "block": "text", "service": "gemini", "limit": 1, "show": "label", "size": 11, "weight": 400 },
+      { "block": "text", "service": "gemini", "limit": 2, "show": "label", "size": 11, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "gemini", "limit": 1, "size": 11, "weight": 400, "align": "end" },
+      { "block": "text", "service": "gemini", "limit": 2, "size": 11, "weight": 400, "align": "end" }
+    ]
+  ]
+}

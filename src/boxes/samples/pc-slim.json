@@ -1,0 +1,26 @@
+{
+  "name": "PC slim",
+  "mode": "columns",
+  "columns": [
+    [{ "block": "icon", "service": "pc" }],
+    [
+      { "block": "text", "service": "pc", "limit": "CPU", "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "pc", "limit": "CPU", "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 10 }],
+    [
+      { "block": "text", "service": "pc", "limit": "RAM", "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "pc", "limit": "RAM", "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 10 }],
+    [
+      { "block": "text", "service": "pc", "limit": "GPU", "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "pc", "limit": "GPU", "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 10 }],
+    [
+      { "block": "text", "service": "pc", "limit": "VRAM", "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "pc", "limit": "VRAM", "thickness": 2 }
+    ]
+  ]
+}

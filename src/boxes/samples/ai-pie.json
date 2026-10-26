@@ -1,0 +1,50 @@
+{
+  "name": "AI pie",
+  "mode": "columns",
+  "columns": [
+    [{ "block": "icon", "service": "gpt" }],
+    [
+      { "block": "pie", "service": "gpt", "limit": 1 },
+      { "block": "pie", "service": "gpt", "limit": 2 }
+    ],
+    [
+      { "block": "text", "service": "gpt", "limit": 1, "show": "label", "size": 13, "weight": 400 },
+      { "block": "text", "service": "gpt", "limit": 2, "show": "label", "size": 13, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "gpt", "limit": 1, "size": 13, "weight": 400, "align": "end" },
+      { "block": "text", "service": "gpt", "limit": 2, "size": 13, "weight": 400, "align": "end" }
+    ],
+    [{ "block": "space", "width": 14 }],
+    [{ "block": "icon", "service": "claude" }],
+    [
+      { "block": "pie", "service": "claude", "limit": 1 },
+      { "block": "pie", "service": "claude", "limit": 2 }
+    ],
+    [
+      { "block": "text", "service": "claude", "limit": 1, "show": "label", "size": 13, "weight": 400 },
+      { "block": "text", "service": "claude", "limit": 2, "show": "label", "size": 13, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "claude", "limit": 1, "size": 13, "weight": 400, "align": "end" },
+      { "block": "text", "service": "claude", "limit": 2, "size": 13, "weight": 400, "align": "end" }
+    ],
+    [{ "block": "space", "width": 14 }],
+    [{ "block": "icon", "service": "gemini" }],
+    [
+      { "block": "pie", "service": "gemini", "limit": 1 },
+      { "block": "pie", "service": "gemini", "limit": 2 }
+    ],
+    [
+      { "block": "text", "service": "gemini", "limit": 1, "show": "label", "size": 13, "weight": 400 },
+      { "block": "text", "service": "gemini", "limit": 2, "show": "label", "size": 13, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "gemini", "limit": 1, "size": 13, "weight": 400, "align": "end" },
+      { "block": "text", "service": "gemini", "limit": 2, "size": 13, "weight": 400, "align": "end" }
+    ]
+  ]
+}

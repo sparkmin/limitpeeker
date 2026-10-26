@@ -1,0 +1,80 @@
+[package]
+name = "limitpeeker"
+version = "0.1.0"
+edition = "2024"
+description = "Usage limits of AI coding subscriptions (Codex, Claude Code, Gemini, Grok) on the Windows 11 taskbar"
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "limitpeeker"
+path = "src/main.rs"
+
+# Runs limitpeeker.exe --remove from its folder.
+[[bin]]
+name = "uninstall"
+path = "src/uninstall.rs"
+
+[dependencies]
+windows = { version = "0.62", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Direct2D",
+    "Win32_Graphics_Direct2D_Common",
+    "Win32_Graphics_DirectWrite",
+    # The GPUs and their memory of their own, listed without a device, for
+    # the PC service's meters.
+    "Win32_Graphics_Dxgi",
+    "Win32_Graphics_Dxgi_Common",
+    "Win32_Graphics_Dwm",
+    "Win32_Graphics_Gdi",
+    "Win32_Graphics_Imaging",
+    "Win32_Security",
+    # The short name of a path with spaces, for the status line command of
+    # the hidden Antigravity CLI.
+    "Win32_Storage_FileSystem",
+    # The package of an app whose job this run was started in, for the log.
+    "Win32_Storage_Packaging_Appx",
+    "Win32_System_Com",
+    # WIC's PNG encoder, for the program icon's largest size.
+    "Win32_System_Com_StructuredStorage",
+    "Win32_System_Console",
+    "Win32_System_DataExchange",
+    "Win32_System_Diagnostics_ToolHelp",
+    "Win32_System_Environment",
+    "Win32_System_JobObjects",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Memory",
+    # The performance counters behind the PC service's meters.
+    "Win32_System_Performance",
+    "Win32_System_Pipes",
+    "Win32_System_Registry",
+    # When the person signed in, to hold the first reads while Windows is
+    # still busy after it.
+    "Win32_System_RemoteDesktop",
+    "Win32_System_RestartManager",
+    "Win32_System_Threading",
+    "Win32_System_SystemInformation",
+    # The sign-in tasks a person made in Task Scheduler, found to say how
+    # the product starts.
+    "Win32_System_TaskScheduler",
+    "Win32_System_Variant",
+    "Win32_System_WindowsProgramming",
+    # VARIANT and the Task Scheduler's collections need it; nothing names
+    # it in the code.
+    "Win32_System_Ole",
+    "Win32_UI_Accessibility",
+    "Win32_UI_Controls",
+    # Windows' color dialog, for a box's color.
+    "Win32_UI_Controls_Dialogs",
+    "Win32_UI_HiDpi",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_Shell",
+    "Win32_UI_WindowsAndMessaging",
+] }
+# Direct2D's points, the same version `windows` uses.
+windows-numerics = "0.3"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

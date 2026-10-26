@@ -1,0 +1,29 @@
+{
+  "name": "PC rings",
+  "mode": "columns",
+  "columns": [
+    [{ "block": "icon", "service": "pc" }],
+    [{ "block": "rings", "service": "pc", "limits": ["CPU", "RAM"], "thickness": 3 }],
+    [
+      { "block": "text", "service": "pc", "limit": "CPU", "show": "label", "size": 11, "weight": 400 },
+      { "block": "text", "service": "pc", "limit": "RAM", "show": "label", "size": 11, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "pc", "limit": "CPU", "size": 11, "weight": 400, "align": "end" },
+      { "block": "text", "service": "pc", "limit": "RAM", "size": 11, "weight": 400, "align": "end" }
+    ],
+    [{ "block": "space", "width": 14 }],
+    [{ "block": "icon", "service": "pc" }],
+    [{ "block": "rings", "service": "pc", "limits": ["GPU", "VRAM"], "thickness": 3 }],
+    [
+      { "block": "text", "service": "pc", "limit": "GPU", "show": "label", "size": 11, "weight": 400 },
+      { "block": "text", "service": "pc", "limit": "VRAM", "show": "label", "size": 11, "weight": 400 }
+    ],
+    [{ "block": "space", "width": 4 }],
+    [
+      { "block": "text", "service": "pc", "limit": "GPU", "size": 11, "weight": 400, "align": "end" },
+      { "block": "text", "service": "pc", "limit": "VRAM", "size": 11, "weight": 400, "align": "end" }
+    ]
+  ]
+}

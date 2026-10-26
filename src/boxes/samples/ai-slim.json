@@ -1,0 +1,38 @@
+{
+  "name": "AI slim",
+  "mode": "columns",
+  "columns": [
+    [{ "block": "icon", "service": "gpt" }],
+    [
+      { "block": "text", "service": "gpt", "limit": 1, "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "gpt", "limit": 1, "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 10 }],
+    [
+      { "block": "text", "service": "gpt", "limit": 2, "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "gpt", "limit": 2, "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 14 }],
+    [{ "block": "icon", "service": "claude" }],
+    [
+      { "block": "text", "service": "claude", "limit": 1, "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "claude", "limit": 1, "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 10 }],
+    [
+      { "block": "text", "service": "claude", "limit": 2, "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "claude", "limit": 2, "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 14 }],
+    [{ "block": "icon", "service": "gemini" }],
+    [
+      { "block": "text", "service": "gemini", "limit": 1, "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "gemini", "limit": 1, "thickness": 2 }
+    ],
+    [{ "block": "space", "width": 10 }],
+    [
+      { "block": "text", "service": "gemini", "limit": 2, "show": "both", "size": 13, "weight": 400 },
+      { "block": "bar", "service": "gemini", "limit": 2, "thickness": 2 }
+    ]
+  ]
+}

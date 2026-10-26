@@ -1,0 +1,4 @@
+LIBRARY limitpeeker_xaml
+EXPORTS
+    DllGetClassObject PRIVATE
+    DllCanUnloadNow PRIVATE

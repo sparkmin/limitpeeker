@@ -1,0 +1,546 @@
+<Window x:Class="LimitPeeker.Settings.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:LimitPeeker.Settings"
+        Title="{l:T window.title}"
+        Icon="limitpeeker.ico"
+        Width="860" Height="640" MinWidth="640" MinHeight="460"
+        WindowStartupLocation="CenterScreen"
+        Language="en-US" FontFamily="Segoe UI, Malgun Gothic">
+    <!-- Segoe UI, as the popup and Windows itself; WPF otherwise takes
+         Windows' message font, which in a Korean Windows is Malgun Gothic and
+         draws a backslash as a won sign. Hangul falls back to it. -->
+    <!-- Pages by what they set, picked in a list on the left, as Windows' own
+         Settings app has them. -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <!-- No icon and name over the pages: the title bar has them. -->
+        <DockPanel Margin="12,20,8,16">
+            <ListBox x:Name="Nav" BorderThickness="0" Background="Transparent"
+                     ItemContainerStyle="{StaticResource Page}"
+                     AutomationProperties.Name="{l:T nav.pages}" SelectionChanged="NavChanged">
+                <!-- General first, then the boxes and their editor, the popup and the notifications. The window
+                     opens on the first. -->
+                <ListBoxItem Tag="GeneralPage" AutomationProperties.Name="{l:T nav.general}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE713;" Style="{StaticResource Icon}" />
+                        <TextBlock Text="{l:T nav.general}" Margin="12,0,0,0" />
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem Tag="BoxesPage" AutomationProperties.Name="{l:T nav.boxes}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8A9;" Style="{StaticResource Icon}" />
+                        <TextBlock Text="{l:T nav.boxes}" Margin="12,0,0,0" />
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem Tag="CustomPage" AutomationProperties.Name="{l:T nav.custom}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE771;" Style="{StaticResource Icon}" />
+                        <TextBlock Text="{l:T nav.custom}" Margin="12,0,0,0" />
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem Tag="PopupPage" AutomationProperties.Name="{l:T nav.popup}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8A1;" Style="{StaticResource Icon}" />
+                        <TextBlock Text="{l:T nav.popup}" Margin="12,0,0,0" />
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem Tag="NotificationsPage" AutomationProperties.Name="{l:T nav.notifications}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xEA8F;" Style="{StaticResource Icon}" />
+                        <TextBlock Text="{l:T nav.notifications}" Margin="12,0,0,0" />
+                    </StackPanel>
+                </ListBoxItem>
+            </ListBox>
+        </DockPanel>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Margin="24,20,32,12">
+                <TextBlock x:Name="PageTitle" Text="{l:T nav.boxes}" FontSize="28" FontWeight="SemiBold" />
+                <TextBlock x:Name="Status" Style="{StaticResource Caption}" Margin="0,4,0,0" />
+            </StackPanel>
+            <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="Body" Margin="24,0,32,32" MaxWidth="760" HorizontalAlignment="Stretch">
+
+                    <!-- Each box on the taskbar as a tab, and the chosen one's
+                         name, place, look, background and services under them;
+                         then what every box shares. -->
+                    <StackPanel x:Name="BoxesPage">
+                        <TextBlock Style="{StaticResource Caption}" Margin="0,0,0,10"
+                                   Text="{l:T boxes.intro}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <StackPanel x:Name="BoxTabs" Orientation="Horizontal" />
+                            <Button x:Name="AddButton" Margin="8,0,0,0" VerticalAlignment="Center"
+                                    AutomationProperties.Name="{l:T boxes.add}" Click="AddClicked">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE710;" Style="{StaticResource Icon}" FontSize="12" />
+                                    <TextBlock Text="{l:T boxes.add}" Margin="8,0,0,0" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T boxes.name.title}" />
+                                    <TextBlock Text="{l:T boxes.name.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <TextBox x:Name="NameBox" Grid.Column="1" Width="220" VerticalAlignment="Center"
+                                         MaxLength="32" AutomationProperties.Name="{l:T boxes.name.field}"
+                                         LostKeyboardFocus="NameLeft" KeyDown="NameKey" />
+                                <Button x:Name="RemoveButton" Grid.Column="2" Margin="8,0,0,0" VerticalAlignment="Center"
+                                        AutomationProperties.Name="{l:T boxes.remove.field}" Click="RemoveClicked">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE74D;" Style="{StaticResource Icon}" FontSize="12" />
+                                        <TextBlock Text="{l:T boxes.remove.button}" Margin="8,0,0,0" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T boxes.place.title}" />
+                                    <TextBlock Text="{l:T boxes.place.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ComboBox x:Name="PlaceBox" Width="250"
+                                              DisplayMemberPath="Title" SelectedValuePath="Key"
+                                              AutomationProperties.Name="{l:T boxes.place.field}"
+                                              SelectionChanged="PlaceChanged" />
+                                    <Button x:Name="EarlierButton" Margin="8,0,0,0" Padding="10,6"
+                                            AutomationProperties.Name="{l:T boxes.place.move_left}" Click="EarlierClicked">
+                                        <TextBlock Text="&#xE76B;" Style="{StaticResource Icon}" FontSize="12" />
+                                    </Button>
+                                    <Button x:Name="LaterButton" Margin="4,0,0,0" Padding="10,6"
+                                            AutomationProperties.Name="{l:T boxes.place.move_right}" Click="LaterClicked">
+                                        <TextBlock Text="&#xE76C;" Style="{StaticResource Icon}" FontSize="12" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="250" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T boxes.style.title}" />
+                                    <TextBlock Text="{l:T boxes.style.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ComboBox x:Name="StyleBox" Grid.Column="1" VerticalAlignment="Center"
+                                          DisplayMemberPath="Title" SelectedValuePath="Key"
+                                          AutomationProperties.Name="{l:T boxes.style.title}" SelectionChanged="StyleChanged" />
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="250" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:T boxes.background.title}" />
+                                        <TextBlock Text="{l:T boxes.background.caption}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <ComboBox x:Name="BackgroundBox" Grid.Column="1" VerticalAlignment="Center"
+                                              DisplayMemberPath="Title" SelectedValuePath="Key"
+                                              AutomationProperties.Name="{l:T boxes.background.title}" SelectionChanged="BackgroundChanged" />
+                                </Grid>
+                                <!-- The box's own color: a swatch that opens Windows' color
+                                     dialog, an eyedropper for a color on the screen, and
+                                     Default, which puts the color and opacity back; then the
+                                     opacity, 0 for no background. -->
+                                <Grid Margin="0,12,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="250" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:T boxes.color.title}" />
+                                        <TextBlock Text="{l:T boxes.color.caption}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button x:Name="ColorButton" Padding="4"
+                                                AutomationProperties.Name="{l:T boxes.color.swatch}" Click="ColorClicked">
+                                            <Grid Width="22" Height="22">
+                                                <!-- A checkerboard under the color, so a translucent one shows as such. -->
+                                                <Border CornerRadius="3">
+                                                    <Border.Background>
+                                                        <DrawingBrush TileMode="Tile" Viewport="0,0,8,8" ViewportUnits="Absolute">
+                                                            <DrawingBrush.Drawing>
+                                                                <DrawingGroup>
+                                                                    <GeometryDrawing Brush="#FFFFFFFF">
+                                                                        <GeometryDrawing.Geometry>
+                                                                            <RectangleGeometry Rect="0,0,8,8" />
+                                                                        </GeometryDrawing.Geometry>
+                                                                    </GeometryDrawing>
+                                                                    <GeometryDrawing Brush="#FFBFBFBF">
+                                                                        <GeometryDrawing.Geometry>
+                                                                            <GeometryGroup>
+                                                                                <RectangleGeometry Rect="0,0,4,4" />
+                                                                                <RectangleGeometry Rect="4,4,4,4" />
+                                                                            </GeometryGroup>
+                                                                        </GeometryDrawing.Geometry>
+                                                                    </GeometryDrawing>
+                                                                </DrawingGroup>
+                                                            </DrawingBrush.Drawing>
+                                                        </DrawingBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <Border x:Name="Swatch" CornerRadius="3" BorderThickness="1"
+                                                        BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}" />
+                                            </Grid>
+                                        </Button>
+                                        <Button x:Name="DropperButton" Margin="4,0,0,0" Padding="9,6"
+                                                AutomationProperties.Name="{l:T boxes.color.eyedropper}"
+                                                ToolTip="{l:T boxes.color.eyedropper}" Click="DropperClicked">
+                                            <TextBlock Text="&#xEF3C;" Style="{StaticResource Icon}" FontSize="14" />
+                                        </Button>
+                                        <Button x:Name="DefaultColorButton" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                Content="{l:T boxes.color.default}" Click="DefaultColorClicked" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Margin="0,12,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="250" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:T boxes.opacity.title}" />
+                                        <TextBlock Text="{l:T boxes.opacity.caption}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <DockPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock x:Name="OpacityText" DockPanel.Dock="Right" Width="44" TextAlignment="Right"
+                                                   VerticalAlignment="Center" />
+                                        <Slider x:Name="OpacitySlider" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10"
+                                                VerticalAlignment="Center" Margin="0,0,8,0"
+                                                AutomationProperties.Name="{l:T boxes.opacity.title}" ValueChanged="OpacityChanged" />
+                                    </DockPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="{l:T boxes.services.title}" Style="{StaticResource Section}" />
+                        <!-- A custom box's blocks choose its services; the editor is
+                             one press away. -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="ServicesNote" Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                            <Button x:Name="EditorLinkButton" Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center"
+                                    Content="{l:T custom.editor.button}" Click="EditorClicked" Visibility="Collapsed" />
+                        </Grid>
+                        <StackPanel x:Name="ServicesPanel" />
+                        <!-- The logos are not distributed; where to put them, one
+                             press away. -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:T boxes.logos.title}" />
+                                        <TextBlock Text="{l:T boxes.logos.caption}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" VerticalAlignment="Center" MinWidth="150"
+                                            Content="{l:T boxes.logos.button}" Click="IconsClicked" />
+                                </Grid>
+                                <TextBlock x:Name="LogosNote" Style="{StaticResource Caption}" Margin="0,10,0,0" Visibility="Collapsed" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="{l:T boxes.all.title}" Style="{StaticResource Section}" />
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="250" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <!-- Not "Show", which reads as showing or not. -->
+                                    <TextBlock Text="{l:T boxes.values.title}" />
+                                    <TextBlock Text="{l:T boxes.values.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ComboBox x:Name="FillBox" Grid.Column="1" VerticalAlignment="Center"
+                                          DisplayMemberPath="Title" SelectedValuePath="Key"
+                                          AutomationProperties.Name="{l:T boxes.values.title}" SelectionChanged="FillChanged" />
+                            </Grid>
+                        </Border>
+                        <!-- Low values in orange, then red, for all boxes and the
+                             popup; on at first. -->
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T boxes.warn.title}" />
+                                    <TextBlock Text="{l:T boxes.warn.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <CheckBox x:Name="WarnCheck" Grid.Column="1" VerticalAlignment="Center"
+                                          Style="{StaticResource Switch}"
+                                          AutomationProperties.Name="{l:T boxes.warn.title}"
+                                          Checked="WarnChanged" Unchecked="WarnChanged" />
+                            </Grid>
+                        </Border>
+                        <!-- Dragging boxes on the taskbar, for all of them. -->
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T boxes.drag.title}" />
+                                    <TextBlock Text="{l:T boxes.drag.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <CheckBox x:Name="DragCheck" Grid.Column="1" VerticalAlignment="Center"
+                                          Style="{StaticResource Switch}"
+                                          AutomationProperties.Name="{l:T boxes.drag.title}"
+                                          Checked="DragChanged" Unchecked="DragChanged" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- The services the popup's summary shows, apart from the
+                         taskbar's. -->
+                    <StackPanel x:Name="PopupPage" Visibility="Collapsed">
+                        <TextBlock Text="{l:T popup.summary.title}" Style="{StaticResource Section}" Margin="0,0,0,8" />
+                        <TextBlock Style="{StaticResource Caption}" Margin="0,0,0,8"
+                                   Text="{l:T popup.summary.caption}" />
+                        <Border Style="{StaticResource Card}">
+                            <UniformGrid x:Name="SummaryPanel" Columns="3" />
+                        </Border>
+                    </StackPanel>
+
+                    <!-- The editor is a window of its own. -->
+                    <StackPanel x:Name="CustomPage" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T custom.editor.title}" />
+                                    <TextBlock Text="{l:T custom.editor.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <Button Grid.Column="1" VerticalAlignment="Center" Content="{l:T custom.editor.button}" Click="EditorClicked" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Windows notifications about the limits read: each kind
+                         on or off, the line of almost used up, and a test.
+ -->
+                    <StackPanel x:Name="NotificationsPage" Visibility="Collapsed">
+                        <TextBlock Style="{StaticResource Caption}" Margin="0,0,0,10"
+                                   Text="{l:T notifications.intro}" />
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T notifications.near.title}" />
+                                    <TextBlock Text="{l:T notifications.near.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ComboBox x:Name="NotifyAtBox" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0" MinWidth="120"
+                                          DisplayMemberPath="Title" SelectedValuePath="Key"
+                                          AutomationProperties.Name="{l:T notifications.near.field}" SelectionChanged="NotifyAtChanged" />
+                                <CheckBox x:Name="NotifyNearCheck" Grid.Column="2" Tag="near" VerticalAlignment="Center"
+                                          Style="{StaticResource Switch}" AutomationProperties.Name="{l:T notifications.near.title}"
+                                          Checked="NotifyChanged" Unchecked="NotifyChanged" />
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T notifications.full.title}" />
+                                    <TextBlock Text="{l:T notifications.full.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <CheckBox x:Name="NotifyFullCheck" Grid.Column="1" Tag="full" VerticalAlignment="Center"
+                                          Style="{StaticResource Switch}" AutomationProperties.Name="{l:T notifications.full.title}"
+                                          Checked="NotifyChanged" Unchecked="NotifyChanged" />
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T notifications.back.title}" />
+                                    <TextBlock Text="{l:T notifications.back.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <CheckBox x:Name="NotifyBackCheck" Grid.Column="1" Tag="back" VerticalAlignment="Center"
+                                          Style="{StaticResource Switch}" AutomationProperties.Name="{l:T notifications.back.title}"
+                                          Checked="NotifyChanged" Unchecked="NotifyChanged" />
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T notifications.failing.title}" />
+                                    <TextBlock Text="{l:T notifications.failing.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <CheckBox x:Name="NotifyFailingCheck" Grid.Column="1" Tag="failing" VerticalAlignment="Center"
+                                          Style="{StaticResource Switch}" AutomationProperties.Name="{l:T notifications.failing.title}"
+                                          Checked="NotifyChanged" Unchecked="NotifyChanged" />
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T notifications.test.title}" />
+                                    <TextBlock Text="{l:T notifications.test.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <Button Grid.Column="1" VerticalAlignment="Center" MinWidth="150"
+                                        Content="{l:T notifications.test.button}" Click="NotifyTestClicked" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Reading now, starting at sign-in, and how to take away
+                         what it keeps. -->
+                    <StackPanel x:Name="GeneralPage" Visibility="Collapsed">
+                        <!-- This window's and the editor's language; the boxes,
+                             the popup and the notifications stay in English.
+ -->
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="250" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T general.language.title}" />
+                                    <TextBlock Text="{l:T general.language.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ComboBox x:Name="LanguageBox" Grid.Column="1" VerticalAlignment="Center"
+                                          DisplayMemberPath="Title" SelectedValuePath="Key"
+                                          AutomationProperties.Name="{l:T general.language.title}" SelectionChanged="LanguageChanged" />
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T general.refresh.title}" />
+                                    <TextBlock Text="{l:T general.refresh.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <Button x:Name="RefreshButton" Grid.Column="1" VerticalAlignment="Center" MinWidth="150"
+                                        Content="{l:T general.refresh.button}" Click="RefreshClicked" />
+                            </Grid>
+                        </Border>
+                        <!-- Each tool's own update command, every 15 minutes, off at
+                             first. -->
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{l:T general.updates.title}" />
+                                    <TextBlock Text="{l:T general.updates.caption}" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <CheckBox x:Name="UpdatesCheck" Grid.Column="1" VerticalAlignment="Center"
+                                          Style="{StaticResource Switch}"
+                                          AutomationProperties.Name="{l:T general.updates.title}"
+                                          Checked="UpdatesChanged" Unchecked="UpdatesChanged" />
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock Text="{l:T general.startup.title}" />
+                                        <TextBlock x:Name="StartupNote" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <CheckBox x:Name="StartupCheck" Grid.Column="1" VerticalAlignment="Center"
+                                              Style="{StaticResource Switch}"
+                                              AutomationProperties.Name="{l:T general.startup.title}" Click="StartupClicked" />
+                                </Grid>
+                                <!-- Task Scheduler's sign-in tasks a person made, found, not made. -->
+                                <TextBlock x:Name="TaskNote" Style="{StaticResource Caption}" Margin="0,10,0,0" Visibility="Collapsed" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="{l:T general.remove.title}" />
+                                <!-- uninstall.exe runs the product's remove option. -->
+                                <TextBlock Style="{StaticResource Caption}"
+                                           Text="{l:T general.remove.caption}" />
+                            </StackPanel>
+                        </Border>
+                        <!-- The version, and asking for a newer one only when pressed. -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="VersionText" Text="LimitPeeker" />
+                                        <TextBlock x:Name="UpdateNote" Style="{StaticResource Caption}" Visibility="Collapsed" />
+                                    </StackPanel>
+                                    <Button x:Name="UpdateButton" Grid.Column="1" VerticalAlignment="Center" MinWidth="150"
+                                            Content="{l:T general.version.check}" Click="CheckUpdatesClicked" Visibility="Collapsed" />
+                                </Grid>
+                                <Button x:Name="ReleasesButton" HorizontalAlignment="Left" Margin="0,10,0,0"
+                                        Content="{l:T general.version.releases}" Click="ReleasesClicked" Visibility="Collapsed" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>
