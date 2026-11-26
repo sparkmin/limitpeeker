@@ -75,6 +75,42 @@ pub(super) const MEASURE_DPI: usize = 36;
 /// adopted at attach.
 pub(super) const HIDE_REASON: usize = 38;
 pub(super) const ATTACH_ROOT_WIDTH: usize = 39;
+/// What the hook found above the tray frame, packed as in
+/// native/taskbar_tap.cpp: the check that decided, the step reached, the
+/// parent's kind, its rows and its columns. With status 5, a check of
+/// undecided or adopted means that step threw.
+pub(super) const ATTACH_DETAIL: usize = 40;
+pub(super) fn attach_detail(word: u32) -> String {
+    const CHECKS: [&str; 6] = [
+        "undecided",
+        "adopted",
+        "no-parent",
+        "not-grid",
+        "columns",
+        "rows",
+    ];
+    const STEPS: [&str; 6] = ["none", "parent", "rows", "columns", "root-width", "start"];
+    const KINDS: [&str; 8] = [
+        "none",
+        "grid",
+        "stack-panel",
+        "canvas",
+        "panel",
+        "border",
+        "element",
+        "other",
+    ];
+    let name =
+        |names: &[&'static str], code: u32| names.get(code as usize).copied().unwrap_or("unknown");
+    format!(
+        "hook attach check={} step={} parent={} rows={} columns={}",
+        name(&CHECKS, word & 0xf),
+        name(&STEPS, (word >> 4) & 0xf),
+        name(&KINDS, (word >> 8) & 0xf),
+        (word >> 12) & 0xff,
+        (word >> 20) & 0xff
+    )
+}
 /// How often the hook measured the label width.
 pub(super) const LABEL_MEASURES: usize = 20;
 /// Why the hook's last measurement failed (0 when it succeeded). Tells a taskbar

@@ -162,6 +162,16 @@ constexpr size_t MeasureSeq=32, MeasureValid=33, MeasureItems=34,
 // attach. The reason is always on record.
 constexpr size_t HideReason=38, AttachRootWidth=39;
 enum Hide : LONG { Shown=0, NoMeasure=1, NotRequested=2, NoReservation=3, Settling=4, NoText=5, };
+// What the hook found above the tray frame, in one word from the lowest bits:
+// the check that decided (4 bits), the step reached (4), the parent's kind (4)
+// and its rows and columns (8 each, 255 for more). A step is written before it
+// runs, so one that throws stays on record: status 5 with the check undecided,
+// or adopted, was thrown by that step. An older hook leaves the word 0, so the
+// version stays.
+constexpr size_t AttachDetail=40;
+enum Check : LONG { Undecided=0, Adopted=1, NoParent=2, NotGrid=3, HasColumns=4, HasRows=5, };
+enum Step : LONG { NoStep=0, ParentStep=1, RowsStep=2, ColumnsStep=3, RootWidthStep=4, StartStep=5, };
+enum Holder : LONG { NoHolder=0, GridHolder=1, StackHolder=2, CanvasHolder=3, PanelHolder=4, BorderHolder=5, ElementHolder=6, OtherHolder=7, };
 // How often the label width was measured.
 constexpr size_t LabelMeasures=20;// Why the last measurement failed (0 when it succeeded). "No measurement" alone
 // cannot tell a taskbar moved to the top apart from a Windows update renaming
@@ -689,6 +699,18 @@ struct Context : std::enable_shared_from_this<Context> {
     // placement is refused rather than guessed.
     static constexpr std::wstring_view ItemsAnchor{L"Microsoft.UI.Xaml.Controls.ItemsRepeater"};
     static constexpr std::wstring_view TrayAnchor{L"SystemTray.SystemTrayFrame"};
+    // The repeater's item the tray frame is in, where Windows keeps the tray
+    // among the taskbar's items, at most three levels above the frame; null
+    // where the tray stands beside the taskbar frame.
+    x::DependencyObject tray_item() const {
+        x::DependencyObject node=anchor;
+        for(int hops=0;node && hops<3;++hops) {
+            const auto above=m::VisualTreeHelper::GetParent(node);
+            if(above && winrt::get_class_name(above)==ItemsAnchor) return node;
+            node=above;
+        }
+        return nullptr;
+    }
 
     struct Occupancy {
         int anchors=0, rects=0, visited=0;
@@ -723,8 +745,13 @@ struct Context : std::enable_shared_from_this<Context> {
             if(count<0 || count>2048) { o.ok=false; return; }
             // The repeater spans the whole taskbar, so only its items describe
             // occupied space. Items do not nest, so this does not recurse.
-            for(int index=0;index<count;++index)
-                occupy(m::VisualTreeHelper::GetChild(node,index),root,o,false);
+            // The item the tray is in is the tray, not an app.
+            const auto tray=tray_item();
+            for(int index=0;index<count;++index) {
+                const auto child=m::VisualTreeHelper::GetChild(node,index);
+                if(tray && child==tray) { ++o.anchors; occupy(anchor,root,o,true); }
+                else occupy(child,root,o,false);
+            }
             return;
         }
         auto element=node.try_as<x::FrameworkElement>();
@@ -1943,14 +1970,15 @@ struct Context : std::enable_shared_from_this<Context> {
     // `owned`, given `owned_dip` more left margin by this hook, is taken as
     // laid out that much further left when the leftmost item is looked for,
     // so that margin does not make another item the leftmost.
-    static Items items_of(x::FrameworkElement const& repeater, x::FrameworkElement const& root, x::FrameworkElement const& owned=nullptr, double owned_dip=0) {
+    // `tray`, the item the tray is in, is none of them.
+    static Items items_of(x::FrameworkElement const& repeater, x::FrameworkElement const& root, x::DependencyObject const& tray, x::FrameworkElement const& owned=nullptr, double owned_dip=0) {
         Items items;
         double leftmost=0;
         const double across=root.ActualWidth();
         const auto count=m::VisualTreeHelper::GetChildrenCount(repeater);
         for(int index=0;index<count && index<2048;++index) {
             auto element=m::VisualTreeHelper::GetChild(repeater,index).try_as<x::FrameworkElement>();
-            if(!element || element.Visibility()!=x::Visibility::Visible) continue;
+            if(!element || element.Visibility()!=x::Visibility::Visible || (tray && element==tray)) continue;
             const double width=element.ActualWidth();
             const auto point=element.TransformToVisual(root).TransformPoint({0,0});
             if(!(width>0) || !std::isfinite(point.X) || point.X+width<=0 || point.X>=across) continue;
@@ -2086,7 +2114,12 @@ struct Context : std::enable_shared_from_this<Context> {
         const auto part=[](Boxes const& row) { return row.empty()?0.:row_dip(row,true)+2*BoxGap; };
         auto const& root=measured.root;
         // The margins the rows want; a row beside the apps has none of its own.
-        const auto wanted=[&] { return std::pair{part(ends)+part(starts),afters_beside?0.:part(afters)}; };
+        // shortcut: with the tray among the repeater's items the repeater's
+        // right margin would move the tray, so the row after the apps gets no
+        // room of its own there and hides when it reaches the tray; give it
+        // room another way if crowded taskbars hide it too often.
+        const auto tray=tray_item();
+        const auto wanted=[&] { return std::pair{part(ends)+part(starts),afters_beside || tray?0.:part(afters)}; };
         if(!left_repeater && !left_done && left_attempts<40) {
             ++left_attempts;
             const auto frame=taskbar_frame(root);
@@ -2126,7 +2159,7 @@ struct Context : std::enable_shared_from_this<Context> {
         // margins changed below take effect when it is laid out again.
         const auto content=left_repeater.TransformToVisual(root).TransformPoint({0,0});
         const double end=content.X+left_repeater.ActualWidth();
-        const Items items=items_of(left_repeater,root,left_owned.element,left_dip), around=steady(items);
+        const Items items=items_of(left_repeater,root,tray,left_owned.element,left_dip), around=steady(items);
         // The row after the apps beside them or beyond the Widgets button,
         // decided only once the taskbar has been laid out after the margins
         // last changed.
@@ -2226,7 +2259,7 @@ struct Context : std::enable_shared_from_this<Context> {
         const double width=drawn_dip(dragged);
         const Place own=asked(dragged.box_index);
         const auto repeater=left_repeater?left_repeater:taskbar_repeater(taskbar_frame(root));
-        const Items items=repeater?steady(items_of(repeater,root,left_owned.element,left_dip)):Items{};
+        const Items items=repeater?steady(items_of(repeater,root,tray_item(),left_owned.element,left_dip)):Items{};
         const double strip=repeater?repeater.TransformToVisual(root).TransformPoint({0,0}).X:0;
         const double tray=reserved()
             ?tray_panel().TransformToVisual(root).TransformPoint({0,0}).X+padding_original.Left+reserved_dip
@@ -2533,6 +2566,49 @@ struct Context : std::enable_shared_from_this<Context> {
 // until Explorer exits to avoid cross-thread destruction/unload races.
 thread_local std::shared_ptr<Context> context;
 
+// The step about to run, kept with what was found so far.
+void step(State& s,Step at) {
+    InterlockedExchange(s.words+AttachDetail,(s.read(AttachDetail)&~0xf0L)|(at<<4));
+}
+// The Grid the boxes go on: the tray frame's parent, or, where Windows keeps
+// the tray among the taskbar's items, the Grid the taskbar's repeater is on,
+// the repeater at most three levels above the frame; either only with no
+// columns and at most one row, so that no native taskbar element is shifted or
+// resized. Null for any other tree; what was found is on record either way.
+c::Grid adopt(x::FrameworkElement const& anchor,State& s) {
+    const auto byte=[](uint32_t v) { return static_cast<LONG>(v>255?255:v); };
+    LONG found=0;
+    const auto note=[&](Step at,Check check=Undecided) { InterlockedExchange(s.words+AttachDetail,check|(at<<4)|found); };
+    note(ParentStep);
+    const auto logical=anchor.Parent();
+    // A frame with no parent of its own may still sit under a visual one.
+    const auto holder=logical?logical:m::VisualTreeHelper::GetParent(anchor);
+    auto grid=holder.try_as<c::Grid>();
+    x::DependencyObject above=anchor;
+    for(int hops=0;!grid && above && hops<3;++hops) {
+        above=m::VisualTreeHelper::GetParent(above);
+        if(above && winrt::get_class_name(above)==Context::ItemsAnchor) {
+            grid=m::VisualTreeHelper::GetParent(above).try_as<c::Grid>();
+            break;
+        }
+    }
+    found=(!holder?NoHolder:holder.try_as<c::Grid>()?GridHolder:holder.try_as<c::StackPanel>()?StackHolder:holder.try_as<c::Canvas>()?CanvasHolder
+        :holder.try_as<c::Panel>()?PanelHolder:holder.try_as<c::Border>()?BorderHolder
+        :holder.try_as<x::FrameworkElement>()?ElementHolder:OtherHolder)<<8;
+    if(!logical) { note(ParentStep,NoParent); return nullptr; }
+    if(!grid) { note(ParentStep,NotGrid); return nullptr; }
+    note(RowsStep);
+    const auto rows=grid.RowDefinitions().Size();
+    found|=byte(rows)<<12;
+    note(ColumnsStep);
+    const auto columns=grid.ColumnDefinitions().Size();
+    found|=byte(columns)<<20;
+    if(columns!=0) { note(ColumnsStep,HasColumns); return nullptr; }
+    if(rows>1) { note(ColumnsStep,HasRows); return nullptr; }
+    note(ColumnsStep,Adopted);
+    return grid;
+}
+
 struct Watcher : winrt::implements<Watcher,IVisualTreeServiceCallback2> {
     winrt::com_ptr<IGlobalInterfaceTable> git;
     DWORD cookie;
@@ -2554,14 +2630,13 @@ struct Watcher : winrt::implements<Watcher,IVisualTreeServiceCallback2> {
                 try {
                     s->reach(Dispatched);
                     if(s->expired() || s->stopped) { s->stopped=true; s->status(4); return; }
-                    auto parent=anchor.Parent().try_as<c::Grid>();
-                    // No shifting columns or resizing any native taskbar element.
-                    if(!parent || parent.ColumnDefinitions().Size()!=0 || parent.RowDefinitions().Size()>1) {
-                        s->status(5,E_NOTIMPL); s->stopped=true; return;
-                    }
+                    auto parent=adopt(anchor,*s);
+                    if(!parent) { s->status(5,E_NOTIMPL); s->stopped=true; return; }
+                    step(*s,RootWidthStep);
                     if(auto content=anchor.XamlRoot()?anchor.XamlRoot().Content().try_as<x::FrameworkElement>():nullptr)
                         InterlockedExchange(s->words+AttachRootWidth,
                             static_cast<LONG>(content.ActualWidth()*anchor.XamlRoot().RasterizationScale()));
+                    step(*s,StartStep);
                     context=std::make_shared<Context>();
                     context->state=s; context->parent=parent; context->anchor=anchor;
                     context->start();
@@ -2586,10 +2661,9 @@ struct Watcher : winrt::implements<Watcher,IVisualTreeServiceCallback2> {
 void restart(std::shared_ptr<State> const& s) noexcept {
     try {
         auto anchor=context?context->anchor:nullptr;
-        auto parent=anchor?anchor.Parent().try_as<c::Grid>():nullptr;
-        if(!anchor || !anchor.XamlRoot() || !parent || parent.ColumnDefinitions().Size()!=0 || parent.RowDefinitions().Size()>1) {
-            s->stopped=true; s->status(4); return;
-        }
+        auto parent=anchor && anchor.XamlRoot()?adopt(anchor,*s):nullptr;
+        if(!parent) { s->stopped=true; s->status(4); return; }
+        step(*s,StartStep);
         context=std::make_shared<Context>();
         context->state=s; context->parent=parent; context->anchor=anchor;
         context->start();

@@ -377,6 +377,24 @@ mod tests {
     use windows::core::PCWSTR;
 
     #[test]
+    fn what_the_hook_found_above_the_tray_frame_is_named() {
+        // A Grid of one row and three columns, refused for its columns;
+        // and a parent that is no Grid, where a later step threw.
+        assert_eq!(
+            attach_detail(4 | (3 << 4) | (1 << 8) | (1 << 12) | (3 << 20)),
+            "hook attach check=columns step=columns parent=grid rows=1 columns=3"
+        );
+        assert_eq!(
+            attach_detail(1 | (5 << 4) | (1 << 8)),
+            "hook attach check=adopted step=start parent=grid rows=0 columns=0"
+        );
+        assert_eq!(
+            attach_detail(3 | (1 << 4) | (4 << 8)),
+            "hook attach check=not-grid step=parent parent=panel rows=0 columns=0"
+        );
+    }
+
+    #[test]
     fn every_run_ends_its_log_with_one_line() {
         // Attached, or not and why, so a log without it was ended from
         // outside.

@@ -286,6 +286,15 @@ impl Seen {
                     c.get(FULL_WIDTH)
                 ),
             );
+            // What the hook found above the tray frame: always beside a
+            // failure, and with --diagnostics otherwise.
+            let detail = c.get(ATTACH_DETAIL);
+            if detail != 0 {
+                log(
+                    if status == 5 { file } else { hook_log },
+                    attach_detail(detail),
+                );
+            }
             self.status = status;
         }
         status

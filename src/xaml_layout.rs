@@ -75,6 +75,22 @@ mod tests {
             "enum Refusal : LONG { NotRefused=0, SiteAgain=1, Elevated=2, NotTaskbar=3, LeaseGone=4, OtherAttach=5, Taken=6, SetupFailed=7, };"
         ));
         assert!(native.contains("InterlockedCompareExchange(state->words+StatusWord,1,0)!=0"));
+        // What the hook found above the tray frame, by name as the enums
+        // run.
+        assert!(native.contains("constexpr size_t AttachDetail=40;"));
+        assert!(controller.contains("const ATTACH_DETAIL: usize = 40;"));
+        assert!(native.contains(
+            "enum Check : LONG { Undecided=0, Adopted=1, NoParent=2, NotGrid=3, HasColumns=4, HasRows=5, };"
+        ));
+        assert!(native.contains(
+            "enum Step : LONG { NoStep=0, ParentStep=1, RowsStep=2, ColumnsStep=3, RootWidthStep=4, StartStep=5, };"
+        ));
+        assert!(native.contains(
+            "enum Holder : LONG { NoHolder=0, GridHolder=1, StackHolder=2, CanvasHolder=3, PanelHolder=4, BorderHolder=5, ElementHolder=6, OtherHolder=7, };"
+        ));
+        assert!(native.contains("check|(at<<4)|found"));
+        assert!(native.contains("found|=byte(rows)<<12;"));
+        assert!(native.contains("found|=byte(columns)<<20;"));
         assert!(controller.contains("PCWSTR(data.as_ptr()),"));
     }
 
@@ -442,10 +458,10 @@ mod tests {
         // last changed, and a little more room needed to go beside than to
         // stay.
         assert!(native.contains(
-            "items_of(left_repeater,root,left_owned.element,left_dip), around=steady(items);"
+            "items_of(left_repeater,root,tray,left_owned.element,left_dip), around=steady(items);"
         ));
         assert!(native.contains(
-            "repeater?steady(items_of(repeater,root,left_owned.element,left_dip)):Items{};"
+            "repeater?steady(items_of(repeater,root,tray_item(),left_owned.element,left_dip)):Items{};"
         ));
         assert!(native.contains("constexpr DWORD WidgetsHoldMs=5000;"));
         assert!(native.contains("constexpr double SideRoomDip=12;"));
@@ -454,11 +470,9 @@ mod tests {
             native
                 .contains("afters_beside=!afters.empty() && around.widgets_after && beside_apps(")
         );
-        assert!(
-            native.contains(
-                "return std::pair{part(ends)+part(starts),afters_beside?0.:part(afters)};"
-            )
-        );
+        assert!(native.contains(
+            "return std::pair{part(ends)+part(starts),afters_beside || tray?0.:part(afters)};"
+        ));
         assert!(!native.contains("item_ends("));
     }
 
